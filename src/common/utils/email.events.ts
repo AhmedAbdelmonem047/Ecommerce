@@ -1,7 +1,5 @@
-import { sendEmail } from './sendEmail';
 import { EventEmitter } from "events";
-import { emailTemplate } from './email.template';
-import { OtpTypeEnum } from 'src/common';
+import { emailTemplate, OtpTypeEnum, sendEmail } from 'src/common';
 
 export const eventEmitter = new EventEmitter();
 

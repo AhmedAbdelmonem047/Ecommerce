@@ -24,8 +24,8 @@ export type HOtpDocument = HydratedDocument<Otp>;
 OtpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 OtpSchema.pre("save", async function (this: HOtpDocument & { is_new: boolean, plainCode: string }, next) {
-    this.plainCode = this.code,
-        this.is_new = this.isNew
+    this.plainCode = this.code;
+    this.is_new = this.isNew;
     if (this.isModified("code"))
         this.code = await GenerateHash(this.code);
     await this.populate([{ path: "createdBy", select: "email" }]);
