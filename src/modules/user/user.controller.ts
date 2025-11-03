@@ -1,11 +1,13 @@
-import { Body, Controller, Patch, Post, Res } from "@nestjs/common";
-import { UserSerivce } from "./user.service";
+import { Body, Controller, Get, Patch, Post, Res, UseGuards } from "@nestjs/common";
+import { UserService } from "./user.service";
 import type { Response } from "express";
 import { ConfirmEmailDto, LoginDto, LoginGmailDto, ResendOtpDto, ResetPasswordDto, SignupDto } from "./dto/user.dto";
+import { AuthenticationGuard, AuthorizationGuard, Role, Token, TokenTypeEnum, User } from "../../common";
+import type { HUserDocument } from "../../DB";
 
 @Controller('users')
 export class UserController {
-    constructor(private readonly userService: UserSerivce) { }
+    constructor(private readonly userService: UserService) { }
 
     // =============== Signup =============== //
     @Post("signup")
@@ -58,6 +60,15 @@ export class UserController {
     @Patch('resetPassword')
     resetPassword(@Body() body: ResetPasswordDto, @Res() res: Response) {
         return this.userService.resetPassword(body, res)
+    }
+    // ====================================== //
+
+    // ============= Get Profile ============ //
+    @Token(TokenTypeEnum.access)
+    @UseGuards(AuthenticationGuard)
+    @Get('profile')
+    getProfile(@User() user: HUserDocument) {
+        return { message: "Done", user }
     }
     // ====================================== //
 }

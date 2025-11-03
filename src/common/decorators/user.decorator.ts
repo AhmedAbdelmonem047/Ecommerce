@@ -1,3 +1,4 @@
+import { createParamDecorator, ExecutionContext } from "@nestjs/common";
 import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from "class-validator";
 
 
@@ -23,3 +24,10 @@ export function IsMatch(constraints: string[], validationOptions?: ValidationOpt
         })
     }
 }
+
+export const User = createParamDecorator(
+    (data:unknown, ctx:ExecutionContext)=>{
+        const request = ctx.switchToHttp().getRequest();
+        return request.user;
+    }
+)

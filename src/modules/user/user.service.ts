@@ -2,16 +2,21 @@ import { BadRequestException, Body, ConflictException, Injectable, NotFoundExcep
 import type { Response } from "express";
 import { OtpRepo, UserRepo } from "src/DB";
 import { ConfirmEmailDto, LoginDto, LoginGmailDto, ResendOtpDto, ResetPasswordDto, SignupDto } from "./dto/user.dto";
-import { CompareHash, GenerateHash, generateOTP, OtpTypeEnum, UserProvider, UserRole } from "src/common";
+import { CompareHash, GenerateHash, generateOTP, OtpTypeEnum, UserProvider, UserRole } from "../../common";
 import { Types } from "mongoose";
 import { v4 as uuidv4 } from 'uuid';
-import { JwtService } from "@nestjs/jwt"
 import { OAuth2Client, TokenPayload } from "google-auth-library";
+import { TokenService } from "../../common/service/token.service";
+
 
 
 @Injectable()
-export class UserSerivce {
-    constructor(private readonly userRepo: UserRepo, private readonly otpRepo: OtpRepo, private readonly jwtService: JwtService) { }
+export class UserService {
+    constructor(
+        private readonly userRepo: UserRepo,
+        private readonly otpRepo: OtpRepo,
+        private readonly tokenService: TokenService
+    ) { }
 
 
     // ============== Send Otp ============== //
@@ -78,8 +83,8 @@ export class UserSerivce {
         const signatureRefresh = user.role == UserRole.USER ? process.env.REFRESH_TOKEN_USER! : process.env.REFRESH_TOKEN_ADMIN!
 
         const [accessToken, refreshToken] = await Promise.all([
-            this.jwtService.signAsync({ userId: user._id }, { secret: signatureAccess, expiresIn: "1h", jwtid: tokenId }),
-            this.jwtService.signAsync({ userId: user._id }, { secret: signatureRefresh, expiresIn: "1y", jwtid: tokenId })
+            this.tokenService.GenerateToken({ payload: { userId: user._id }, options: { secret: signatureAccess, expiresIn: "1h", jwtid: tokenId } }),
+            this.tokenService.GenerateToken({ payload: { userId: user._id }, options: { secret: signatureRefresh, expiresIn: "1y", jwtid: tokenId } })
         ]);
 
         return res.status(200).json({ message: "Done", accessToken, refreshToken });
@@ -119,8 +124,8 @@ export class UserSerivce {
         const signatureRefresh = user.role == UserRole.USER ? process.env.REFRESH_TOKEN_USER! : process.env.REFRESH_TOKEN_ADMIN!
 
         const [accessToken, refreshToken] = await Promise.all([
-            this.jwtService.signAsync({ userId: user._id }, { secret: signatureAccess, expiresIn: "1h", jwtid: tokenId }),
-            this.jwtService.signAsync({ userId: user._id }, { secret: signatureRefresh, expiresIn: "1y", jwtid: tokenId })
+            this.tokenService.GenerateToken({ payload: { userId: user._id }, options: { secret: signatureAccess, expiresIn: "1h", jwtid: tokenId } }),
+            this.tokenService.GenerateToken({ payload: { userId: user._id }, options: { secret: signatureRefresh, expiresIn: "1y", jwtid: tokenId } })
         ]);
 
         return res.status(200).json({ message: "Login successful", accessToken, refreshToken });

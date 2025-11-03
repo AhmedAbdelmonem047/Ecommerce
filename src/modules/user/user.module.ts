@@ -1,14 +1,16 @@
 import { Module } from "@nestjs/common";
+import { OtpModel, OtpRepo, UserModel, UserRepo } from "../../DB";
 import { UserController } from "./user.controller";
-import { UserSerivce } from "./user.service";
-import { OtpModel, OtpRepo, UserModel, UserRepo } from "src/DB";
+import { UserService } from "./user.service";
+import { TokenService } from "../../common/service/token.service";
 import { JwtService } from "@nestjs/jwt";
+
 
 
 @Module({
     imports: [UserModel, OtpModel],
     controllers: [UserController],
-    providers: [UserSerivce, UserRepo, OtpRepo, JwtService],
-    exports: []
+    providers: [UserService, UserRepo, OtpRepo, JwtService, TokenService],
+    exports: [UserRepo]
 })
 export class UserModule { };
