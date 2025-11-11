@@ -8,7 +8,6 @@ export class ResendOtpDto {
     email: string;
 }
 
-
 export class LoginDto extends ResendOtpDto {
     @IsStrongPassword()
     @IsNotEmpty()

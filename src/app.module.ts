@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module.js';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
+import { S3Service } from './common/index.js';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { Connection } from 'mongoose';
     UserModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, S3Service],
 })
 export class AppModule { }

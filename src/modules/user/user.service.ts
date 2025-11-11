@@ -1,8 +1,8 @@
 import { BadRequestException, Body, ConflictException, Injectable, NotFoundException, Res, ServiceUnavailableException } from "@nestjs/common";
 import type { Response } from "express";
-import { OtpRepo, UserRepo } from "src/DB";
-import { ConfirmEmailDto, LoginDto, LoginGmailDto, ResendOtpDto, ResetPasswordDto, SignupDto } from "./dto/user.dto";
-import { CompareHash, GenerateHash, generateOTP, OtpTypeEnum, UserProvider, UserRole } from "../../common";
+import { OtpRepo, UserRepo, type HUserDocument } from "src/DB";
+import { ConfirmEmailDto, LoginDto, LoginGmailDto, ResendOtpDto, ResetPasswordDto, SignupDto } from "./user.dto";
+import { CompareHash, GenerateHash, generateOTP, OtpTypeEnum, S3Service, User, UserProvider, UserRole } from "../../common";
 import { Types } from "mongoose";
 import { v4 as uuidv4 } from 'uuid';
 import { OAuth2Client, TokenPayload } from "google-auth-library";
@@ -15,7 +15,8 @@ export class UserService {
     constructor(
         private readonly userRepo: UserRepo,
         private readonly otpRepo: OtpRepo,
-        private readonly tokenService: TokenService
+        private readonly tokenService: TokenService,
+        private readonly s3Service: S3Service
     ) { }
 
 
@@ -169,7 +170,7 @@ export class UserService {
     // ====================================== //
 
 
-    // =========== Reset Password ========== //
+    // =========== Reset Password =========== //
     async resetPassword(@Body() body: ResetPasswordDto, @Res() res: Response) {
         const { email, otp, password, cPassword } = body;
 
@@ -186,6 +187,16 @@ export class UserService {
         await this.userRepo.updateOne({ email: user?.email }, { password: hashedPassword });
 
         return res.status(200).json({ message: "Done" });
+    }
+    // ====================================== //
+
+
+    // ============= Upload File =========== //
+    async uploadFile(file: Express.Multer.File, @User() user: HUserDocument) {
+        return this.s3Service.uploadFile({
+            file,
+            path: `users/${user._id}`
+        })
     }
     // ====================================== //
 }

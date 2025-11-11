@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Patch, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, ParseFilePipe, Patch, Post, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { UserService } from "./user.service";
 import type { Response } from "express";
-import { ConfirmEmailDto, LoginDto, LoginGmailDto, ResendOtpDto, ResetPasswordDto, SignupDto } from "./dto/user.dto";
-import { AuthenticationGuard, AuthorizationGuard, Role, Token, TokenTypeEnum, User } from "../../common";
+import { ConfirmEmailDto, LoginDto, LoginGmailDto, ResendOtpDto, ResetPasswordDto, SignupDto } from "./user.dto";
+import { AuthenticationGuard, AuthorizationGuard, filevalidation, multerCloud, Role, StoreEnumType, Token, TokenTypeEnum, User } from "../../common";
 import type { HUserDocument } from "../../DB";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller('users')
 export class UserController {
@@ -69,6 +70,18 @@ export class UserController {
     @Get('profile')
     getProfile(@User() user: HUserDocument) {
         return { message: "Done", user }
+    }
+    // ====================================== //
+
+
+    // ============= Get Profile ============ //
+    @Token(TokenTypeEnum.access)
+    @UseGuards(AuthenticationGuard)
+    @Post('upload')
+    @UseInterceptors(FileInterceptor("attachment", multerCloud({ fileType: filevalidation.image })))
+    async uploadFile(@UploadedFile(ParseFilePipe) file: Express.Multer.File, @User() user: HUserDocument) {
+        const url = await this.userService.uploadFile(file, user);
+        return { message: "Done", url }
     }
     // ====================================== //
 }
