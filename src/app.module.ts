@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './modules/user/user.module.js';
+import { UserModule } from './modules/user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
-import { S3Service } from './common/index.js';
+import { S3Service } from './common';
+import { BrandModule } from './modules/brand/brand.module';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
@@ -19,7 +21,9 @@ import { S3Service } from './common/index.js';
         return connection
       },
     }),
-    UserModule
+    UserModule,
+    BrandModule,
+    CategoryModule
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],

@@ -1,7 +1,7 @@
 import { MongooseModule, Prop, Schema, SchemaFactory, Virtual } from "@nestjs/mongoose";
-import { UserGender, UserProvider, UserRole } from "src/common";
 import { HydratedDocument } from "mongoose";
 import type { HOtpDocument } from "./otp.model.js";
+import { UserGender, UserProvider, UserRoleEnum } from "../../common/enums";
 
 
 @Schema({ timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }, strictQuery: true })
@@ -35,8 +35,8 @@ export class User {
     @Prop({ type: Boolean })
     isConfirmed: boolean;
 
-    @Prop({ type: String, enum: UserRole, default: UserRole.USER })
-    role: UserRole;
+    @Prop({ type: String, enum: UserRoleEnum, default: UserRoleEnum.USER })
+    role: UserRoleEnum;
 
     @Prop({ type: String, enum: UserGender, required: true })
     gender: UserGender;

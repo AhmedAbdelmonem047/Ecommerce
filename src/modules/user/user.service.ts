@@ -2,7 +2,7 @@ import { BadRequestException, Body, ConflictException, Injectable, NotFoundExcep
 import type { Response } from "express";
 import { OtpRepo, UserRepo, type HUserDocument } from "src/DB";
 import { ConfirmEmailDto, LoginDto, LoginGmailDto, ResendOtpDto, ResetPasswordDto, SignupDto } from "./user.dto";
-import { CompareHash, GenerateHash, generateOTP, OtpTypeEnum, S3Service, User, UserProvider, UserRole } from "../../common";
+import { CompareHash, GenerateHash, generateOTP, OtpTypeEnum, S3Service, UserDecorator, UserProvider, UserRoleEnum } from "../../common";
 import { Types } from "mongoose";
 import { v4 as uuidv4 } from 'uuid';
 import { OAuth2Client, TokenPayload } from "google-auth-library";
@@ -80,8 +80,8 @@ export class UserService {
             throw new BadRequestException("Invalid password");
 
         const tokenId = uuidv4();
-        const signatureAccess = user.role == UserRole.USER ? process.env.ACCESS_TOKEN_USER! : process.env.ACCESS_TOKEN_ADMIN!
-        const signatureRefresh = user.role == UserRole.USER ? process.env.REFRESH_TOKEN_USER! : process.env.REFRESH_TOKEN_ADMIN!
+        const signatureAccess = user.role == UserRoleEnum.USER ? process.env.ACCESS_TOKEN_USER! : process.env.ACCESS_TOKEN_ADMIN!
+        const signatureRefresh = user.role == UserRoleEnum.USER ? process.env.REFRESH_TOKEN_USER! : process.env.REFRESH_TOKEN_ADMIN!
 
         const [accessToken, refreshToken] = await Promise.all([
             this.tokenService.GenerateToken({ payload: { userId: user._id }, options: { secret: signatureAccess, expiresIn: "1h", jwtid: tokenId } }),
@@ -121,8 +121,8 @@ export class UserService {
             throw new BadRequestException("Please login on system");
 
         const tokenId = uuidv4();
-        const signatureAccess = user.role == UserRole.USER ? process.env.ACCESS_TOKEN_USER! : process.env.ACCESS_TOKEN_ADMIN!
-        const signatureRefresh = user.role == UserRole.USER ? process.env.REFRESH_TOKEN_USER! : process.env.REFRESH_TOKEN_ADMIN!
+        const signatureAccess = user.role == UserRoleEnum.USER ? process.env.ACCESS_TOKEN_USER! : process.env.ACCESS_TOKEN_ADMIN!
+        const signatureRefresh = user.role == UserRoleEnum.USER ? process.env.REFRESH_TOKEN_USER! : process.env.REFRESH_TOKEN_ADMIN!
 
         const [accessToken, refreshToken] = await Promise.all([
             this.tokenService.GenerateToken({ payload: { userId: user._id }, options: { secret: signatureAccess, expiresIn: "1h", jwtid: tokenId } }),
@@ -192,7 +192,7 @@ export class UserService {
 
 
     // ============= Upload File =========== //
-    async uploadFile(file: Express.Multer.File, @User() user: HUserDocument) {
+    async uploadFile(file: Express.Multer.File, @UserDecorator() user: HUserDocument) {
         return this.s3Service.uploadFile({
             file,
             path: `users/${user._id}`

@@ -1,3 +1,5 @@
 export * from "./user.repo"
 export * from "./db.repo"
 export * from "./otp.repo"
+export * from "./brand.repo"
+export * from "./category.repo"

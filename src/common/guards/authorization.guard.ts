@@ -1,7 +1,7 @@
 import { BadRequestException, CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { UserRole } from "../enums";
-import { roleName } from "../decorators/role.decorator.js";
+import { roleName } from "../decorators";
+import { UserRoleEnum } from "../enums/user.enum.js";
 
 
 
@@ -12,7 +12,7 @@ export class AuthorizationGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const tokenType = this.reflector.get("tokenType", context.getHandler());
         const req = context.switchToHttp().getRequest()
-        const accessRoles: UserRole[] = this.reflector.get(roleName, context.getHandler());
+        const accessRoles: UserRoleEnum[] = this.reflector.get(roleName, context.getHandler());
 
         if (!accessRoles.includes(req.user.role))
             throw new UnauthorizedException();

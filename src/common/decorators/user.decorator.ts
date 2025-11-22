@@ -25,7 +25,7 @@ export function IsMatch(constraints: string[], validationOptions?: ValidationOpt
     }
 }
 
-export const User = createParamDecorator(
+export const UserDecorator = createParamDecorator(
     (data:unknown, ctx:ExecutionContext)=>{
         const request = ctx.switchToHttp().getRequest();
         return request.user;
