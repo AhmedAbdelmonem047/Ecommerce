@@ -91,7 +91,7 @@ export class S3Service {
     // ============ Upload Files ============ //
     uploadFiles = async (
         {
-            storeType = StoreEnumType.DISK,
+            storeType = StoreEnumType.MEMORY,
             Bucket = process.env.AWS_BUCKET_NAME!,
             path = "general",
             ACL = "private" as ObjectCannedACL,

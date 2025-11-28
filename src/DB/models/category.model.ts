@@ -45,7 +45,10 @@ export class Category {
     @Prop({ type: Boolean, default: false })
     isSub: boolean
 
-    @Prop({ required: function (this: Category) { return this.isSub === true }, type: Types.ObjectId, ref: "Category", set: (value: string | Types.ObjectId) => value ? new Types.ObjectId(value) : undefined })
+    @Prop({
+        required: function (this: Category) { return this.isSub === true }, type: Types.ObjectId, ref: "Category",
+        set: (value: string | Types.ObjectId) => value ? new Types.ObjectId(value) : undefined
+    })
     parentId: Types.ObjectId;
 
     @Prop({ required: true, type: Types.ObjectId, ref: "User" })

@@ -43,7 +43,7 @@ BrandSchema.pre(["updateOne", "findOneAndUpdate"], async function (next) {
 BrandSchema.pre(["findOne", "find", "findOneAndUpdate"], async function (next) {
     const { paranoid, ...rest } = this.getQuery();
     if (paranoid === false)
-        this.setQuery({ ...rest, deletedAt: { $exists: true } });
+        this.setQuery({ ...rest });
     else
         this.setQuery({ ...rest, deletedAt: { $exists: false } });
     next();

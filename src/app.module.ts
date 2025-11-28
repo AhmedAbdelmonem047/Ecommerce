@@ -8,6 +8,7 @@ import { Connection } from 'mongoose';
 import { S3Service } from './common';
 import { BrandModule } from './modules/brand/brand.module';
 import { CategoryModule } from './modules/category/category.module';
+import { ProductModule } from './modules/product/product.module.js';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { CategoryModule } from './modules/category/category.module';
     }),
     UserModule,
     BrandModule,
-    CategoryModule
+    CategoryModule,
+    ProductModule
   ],
   controllers: [AppController],
   providers: [AppService, S3Service],
