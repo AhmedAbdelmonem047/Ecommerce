@@ -1,9 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { ProductRepo, BrandRepo, CategoryRepo } from "../../DB"
+import type { HProductDocument, HUserDocument } from '../../DB';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ProductRepo, BrandRepo, CategoryRepo, Category, UserRepo } from "../../DB"
 import { createProductDto, queryDto, updateProductDto } from './product.dto';
 import { S3Service } from '../../common';
 import { Types } from 'mongoose';
-import type { Category, HProductDocument, HUserDocument } from '../../DB';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -11,6 +11,7 @@ export class ProductService {
 
     constructor(
         private readonly productRepo: ProductRepo,
+        private readonly userRepo: UserRepo,
         private readonly categoryRepo: CategoryRepo,
         private readonly brandRepo: BrandRepo,
         private readonly s3Service: S3Service
@@ -145,7 +146,7 @@ export class ProductService {
         }
 
         product.updatedBy = user._id;
-        product.save();
+        await product.save();
         return product;
     }
     // ====================================== //
@@ -208,6 +209,21 @@ export class ProductService {
             query: { page, limit }
         });
         return { currentPage, count, numOfPages, docs }
+    }
+    // ====================================== //
+
+
+    // ======= Add Product to Wishlist ====== //
+    async addProductToWishlist(productId: Types.ObjectId, user: HUserDocument) {
+        const product = await this.productRepo.findOne({ _id: productId });
+        if (!product)
+            throw new NotFoundException("Product doesn't exist");
+
+        let userWishlist = await this.userRepo.findOneAndUpdate({ _id: user._id, wishlist: { $in: productId } }, { $pull: { wishlist: productId } });
+        if (!userWishlist)
+            userWishlist = await this.userRepo.findOneAndUpdate({ _id: user._id }, { $push: { wishlist: productId } });
+
+        return userWishlist;
     }
     // ====================================== //
 }

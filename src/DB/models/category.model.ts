@@ -21,7 +21,6 @@ export async function getAllDescendants(model: Model<any>, parentId: string | Ty
 
     if (!result[0]) return [];
 
-    // Combine parent and descendants into a single array
     return [result[0], ...result[0].descendants];
 }
 
@@ -39,7 +38,7 @@ export class Category {
     @Prop({ type: String })
     assetFolderId: string;
 
-    @Prop([{ type: Types.ObjectId, ref: "Brand" }])
+    @Prop({ type: [{ type: Types.ObjectId, ref: "Brand" }] })
     brands: Types.ObjectId[];
 
     @Prop({ type: Boolean, default: false })

@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, Param, ParseFilePipe, Patch, Post, Query, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseFilePipe, Patch, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { TokenTypeEnum, Auth, UserDecorator, multerCloud, filevalidation, UserRoleEnum } from '../../common';
 import { createProductDto, idDto, queryDto, updateProductDto } from './product.dto';
 import type { HUserDocument } from '../../DB';
-import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { Types } from 'mongoose';
 
 @Controller('products')
@@ -86,6 +86,15 @@ export class ProductController {
     async getAllProducts(@Query() query: queryDto) {
         const { currentPage, count, numOfPages, docs } = await this.productService.getAllProducts(query);
         return { message: "Done", currentPage, count, numOfPages, docs };
+    }
+    // ====================================== //
+
+    // ======= Add Product to Wishlist ====== //
+    @Auth({ tokenType: TokenTypeEnum.access, role: [UserRoleEnum.ADMIN, UserRoleEnum.USER] })
+    @Post("wishlist/:id")
+    async addProductToWishlist(@Param() params: idDto, @UserDecorator() user: HUserDocument) {
+        const userWishlist = await this.productService.addProductToWishlist(params.id, user);
+        return { message: "Done", user: userWishlist };
     }
     // ====================================== //
 }

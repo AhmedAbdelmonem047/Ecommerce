@@ -1,5 +1,5 @@
 import { MongooseModule, Prop, Schema, SchemaFactory, Virtual } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 import type { HOtpDocument } from "./otp.model.js";
 import { UserGender, UserProvider, UserRoleEnum } from "../../common/enums";
 
@@ -49,6 +49,9 @@ export class User {
 
     @Virtual()
     otp: HOtpDocument;
+
+    @Prop({ type: [{ type: Types.ObjectId, ref: "Product" }] })
+    wishlist: Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
