@@ -73,11 +73,20 @@ export class BrandController {
     // ====================================== //
 
 
+    // ====== Get All Brand Paginated ======= //
+    @Get()
+    async getAllBrandsPaginated(@Query() query: queryDto) {
+        const { currentPage, count, numOfPages, docs } = await this.brandService.getAllBrandsPaginated(query);
+        return { message: "Done", currentPage, count, numOfPages, docs };
+    }
+    // ====================================== //
+
+
     // =========== Get All Brand ============ //
     @Get()
-    async getAllBrands(@Query() query: queryDto) {
-        const { currentPage, count, numOfPages, docs } = await this.brandService.getAllBrands(query);
-        return { message: "Done", currentPage, count, numOfPages, docs };
+    async getAllBrands() {
+        const brands = await this.brandService.getAllBrands();
+        return { message: "Done", brands };
     }
     // ====================================== //
 }

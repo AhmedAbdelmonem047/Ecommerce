@@ -1,16 +1,18 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import type { HUserDocument } from '../../DB';
 import { BrandRepo } from "../../DB"
 import { createBrandDto, queryDto, updateBrandDto } from './brand.dto';
-import { S3Service } from '../../common/index.js';
+import { S3Service } from '../../common';
 import { Types } from 'mongoose';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class BrandService {
 
     constructor(
         private readonly brandRepo: BrandRepo,
-        private readonly s3Service: S3Service
+        private readonly s3Service: S3Service,
+        @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
 
     // ============ Create Brand ============ //
@@ -118,8 +120,8 @@ export class BrandService {
     // ====================================== //
 
 
-    // =========== Get All Brand ============ //
-    async getAllBrands(query: queryDto) {
+    // ====== Get All Brand Paginated ======= //
+    async getAllBrandsPaginated(query: queryDto) {
         const { page = 1, limit = 5, search } = query;
         const { currentPage, count, numOfPages, docs } = await this.brandRepo.getAllPaginated({
             filter: {
@@ -133,6 +135,18 @@ export class BrandService {
             query: { page, limit }
         });
         return { currentPage, count, numOfPages, docs }
+    }
+    // ====================================== //
+
+
+    // =========== Get All Brand ============ //
+    async getAllBrands() {
+        let brands = await this.cacheManager.get("brands");
+        if (!brands) {
+            brands = await this.brandRepo.find({});
+            await this.cacheManager.set("brands", brands);
+        }
+        return brands;
     }
     // ====================================== //
 }

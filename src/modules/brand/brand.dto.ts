@@ -1,6 +1,6 @@
 import { IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 import { PartialType } from "nestjs-mapped-types";
-import { AtLeastOne } from "../../common/decorators/brand.decorator.js";
+import { AtLeastOne } from "../../common";
 import { Types } from "mongoose";
 import { Type } from "class-transformer";
 

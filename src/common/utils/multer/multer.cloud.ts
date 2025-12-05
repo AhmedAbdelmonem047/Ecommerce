@@ -4,8 +4,6 @@ import { StoreEnumType } from "../../enums/multer.enum";
 import { filevalidation } from "./multer.fileValidation";
 import type { Request } from "express";
 import { BadRequestException } from "@nestjs/common";
-import { MulterOptions } from "@nestjs/platform-express/multer/interfaces/multer-options.interface.js";
-
 
 
 export const multerCloud = ({

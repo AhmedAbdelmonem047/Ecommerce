@@ -14,9 +14,14 @@ export class AuthenticationGuard implements CanActivate {
         let req: any;
         let authorization: string = ''
         if (context.getType() === "http") {
-            req = context.switchToHttp().getRequest()
+            req = context.switchToHttp().getRequest();
             authorization = req?.headers?.authorization!;
         }
+        else if (context.getType() === "ws") {
+            req = context.switchToWs().getClient();
+            authorization = req.handshake.headers.authorization;
+        }
+
 
         try {
             const [prefix, token] = authorization?.split(" ") || []

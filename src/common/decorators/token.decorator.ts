@@ -1,5 +1,5 @@
 import { SetMetadata } from "@nestjs/common";
-import { TokenTypeEnum } from "../enums/token.enum.js";
+import { TokenTypeEnum } from "../enums";
 
 export const tokenName = "tokenType"
 

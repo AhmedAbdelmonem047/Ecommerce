@@ -1,3 +1,4 @@
+import { SocketGateway } from './../gateway/socket.gateway';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ProductRepo, CartRepo } from '../../DB';
 import { Types } from 'mongoose';
@@ -9,6 +10,7 @@ export class CartService {
     constructor(
         private readonly productRepo: ProductRepo,
         private readonly cartRepo: CartRepo,
+        private readonly socketGateway: SocketGateway,
     ) { }
 
     // ============ Add to Cart ============= //
@@ -41,6 +43,8 @@ export class CartService {
             price: product.price,
             quantity
         })
+
+        this.socketGateway.handleProductQuantityChange(productId, quantity);
 
         await product.save();
         return cart;
@@ -84,6 +88,8 @@ export class CartService {
             throw new NotFoundException("Product not found in cart");
 
         product.quantity = quantity;
+
+        this.socketGateway.handleProductQuantityChange(productId, quantity);
 
         await cart.save()
         return cart;

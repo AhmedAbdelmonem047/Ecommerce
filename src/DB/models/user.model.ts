@@ -1,6 +1,6 @@
 import { MongooseModule, Prop, Schema, SchemaFactory, Virtual } from "@nestjs/mongoose";
 import { HydratedDocument, Types } from "mongoose";
-import type { HOtpDocument } from "./otp.model.js";
+import type { HOtpDocument } from "./otp.model";
 import { UserGender, UserProvider, UserRoleEnum } from "../../common/enums";
 
 
